@@ -1,19 +1,11 @@
-# Example Data
+# Station climate example
 
-This folder contains a tiny station-level CSV example for `SYNTHETIC_SITE_001`.
+`station_monthly_climate.csv` contains generated monthly temperature and precipitation for two synthetic stations from 1981 to 2010. It includes station ID, date, latitude, longitude, temperature in Celsius and monthly precipitation in mm.
 
-The data are fully synthetic toy values created only for checking input format and command-line behavior. They are not copied, sampled, perturbed, renamed, or derived from any real weather station observation. They are too small for scientific analysis. Use complete station records for research calculations.
-
-Run:
+Run from the repository directory:
 
 ```powershell
-bdhei compute `
-  --spei-dir "examples\sample_spei" `
-  --sti-dir "examples\sample_sti" `
-  --output-dir "examples\output" `
-  --spei-glob "*.csv" `
-  --sti-suffix "_STI_M_03.csv" `
-  --months 6 7 8
+bdhei station-indices --config configs/station_climate.example.yaml
 ```
 
-From a source checkout without package installation, set `PYTHONPATH=src` and run `python -m bdhei.cli compute ...` with the same arguments.
+Results contain the climate inputs, SPEI, STI and BDHEI. Change `spei_scale` at the top of the configuration to select SPEI-1 or SPEI-3. These sample values are generated for demonstrating the program and testing the workflow.

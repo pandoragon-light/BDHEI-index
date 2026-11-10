@@ -1,0 +1,30 @@
+# Change only this parameter: 1 = SPEI-1; 3 = SPEI-3.
+spei_scale: 3
+mode: station
+
+# Synthetic example. Replace with your own CSV, XLSX or XLS table.
+input: examples/station_monthly_climate.csv
+station_id_column: station_id
+date_column: date
+temperature_column: temperature
+precipitation_column: precipitation
+latitude_column: latitude
+longitude_column: longitude
+temperature_unit: celsius
+precipitation_unit: mm/month
+
+# Alternatively use separate year/month columns or a coordinate table:
+# year_column: year
+# month_column: month
+# coordinate_file: local/station_coordinates.csv
+# coordinate_station_id_column: station_id
+# coordinate_latitude_column: latitude
+# coordinate_longitude_column: longitude
+
+sti_scale: 3
+months: [6, 7, 8]
+# SPEI calibration defaults to each station's input years.
+# calibration_year_initial: 1981
+# calibration_year_final: 2010
+output: output/station_spei{spei_scale}.csv
+overwrite: false

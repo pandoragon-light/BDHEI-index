@@ -14,52 +14,8 @@ from .grid_bdhei import calculate_bdhei_grid
 from .grid_sti import calculate_sti_grid
 from .netcdf_io import open_netcdf, write_netcdf
 from .path_safety import privacy_safe_path, sanitize_metadata, validate_io_paths
-from .pipeline import _resolve_path, _validate_months
+from .common import _resolve_path, _validate_months, _monthly_years, temperature_to_celsius, precipitation_to_mm
 from .spei import calculate_spei_grid, validate_spei_scale
-
-
-def _unit(value: Any) -> str:
-    return str(value).strip().lower().replace(" ", "").replace("°", "degree_")
-
-
-def temperature_to_celsius(values: np.ndarray, unit: str) -> np.ndarray:
-    normalized = _unit(unit)
-    if normalized in {"c", "celsius", "degree_c", "degree_celsius", "degrees_celsius"}:
-        return values.copy()
-    if normalized in {"k", "kelvin", "degree_kelvin", "degrees_kelvin"}:
-        return values - 273.15
-    raise ValueError("temperature_unit must be celsius or kelvin (or provide recognized NetCDF units)")
-
-
-def precipitation_to_mm(values: np.ndarray, unit: str, days_in_month: np.ndarray) -> np.ndarray:
-    normalized = _unit(unit)
-    days = np.asarray(days_in_month, dtype=float).reshape(-1, 1, 1)
-    if normalized in {"mm", "mm/month", "mmmonth-1", "kgm-2"}:
-        return values.copy()
-    if normalized in {"m/month", "mmonth-1"}:
-        return values * 1000.0
-    if normalized in {"mm/day", "mmday-1", "mmd-1"}:
-        return values * days
-    if normalized in {"m/day", "mday-1", "md-1"}:
-        return values * 1000.0 * days
-    if normalized in {"kgm-2s-1", "kgm**-2s**-1", "mm/s"}:
-        return values * 86400.0 * days
-    raise ValueError(
-        "precipitation_unit must be mm/month, m/month, mm/day, m/day or kg m-2 s-1; "
-        "for NetCDF units='m', explicitly select m/day (ERA5 monthly averaged) or m/month"
-    )
-
-
-def _monthly_years(time: xr.DataArray) -> tuple[int, int]:
-    if time.ndim != 1 or not np.issubdtype(time.dtype, np.datetime64):
-        raise ValueError("time must be a one-dimensional Gregorian monthly date coordinate")
-    dates = np.asarray(time.values)
-    if not dates.size or np.isnat(dates).any():
-        raise ValueError("time contains missing dates or is empty")
-    months = dates.astype("datetime64[M]").astype(int)
-    if months[0] % 12 != 0 or months[-1] % 12 != 11 or np.any(np.diff(months) != 1):
-        raise ValueError("input must contain consecutive monthly data from January through December of complete years")
-    return int(time.dt.year.values[0]), int(time.dt.year.values[-1])
 
 
 def _coordinate(array: xr.DataArray, dimension: str) -> np.ndarray:
