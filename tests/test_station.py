@@ -49,9 +49,12 @@ class StationClimateTests(unittest.TestCase):
                 table = pd.read_csv(self.root / station_result["output"], dtype={"station_id": str})
                 self.assertEqual(station_result["status_counts"], {"ok": 2, "no_valid_data": 1})
                 self.assertEqual(station_result["station_count"], 3)
-                self.assertEqual(station_result["valid_bdhei_count"], 240)
+                self.assertEqual(station_result["valid_bdhei_count"], 478 * 2)
+                self.assertEqual(station_result["months"], list(range(1, 13)))
                 self.assertEqual(station_result["valid_spei_count"], (480 - scale + 1) * 2)
                 self.assertEqual(set(table.station_id), {"001", "002", "EMPTY"})
+                valid_months = pd.to_datetime(table.loc[table.BDHEI.notna(), "date"]).dt.month
+                self.assertEqual(set(valid_months), set(range(1, 13)))
                 name = f"SPEI_{scale}"
                 self.assertNotIn(f"SPEI_{4-scale}", table)
                 with xr.open_dataset(self.root / grid_result["output"], engine="scipy") as grid:
@@ -63,6 +66,17 @@ class StationClimateTests(unittest.TestCase):
                     np.testing.assert_array_equal(previous_sti, table.STI)
                 previous_sti = table.STI.copy()
         self.assertEqual(hashlib.sha256(self.source.read_bytes()).hexdigest(), source_hash)
+
+    def test_custom_bdhei_months_preserve_full_year_spei_and_sti(self):
+        annual = calculate_station_from_config(self.config, base_dir=self.root)
+        seasonal = calculate_station_from_config({**self.config, "months": [6, 7, 8], "output": "summer.csv"}, base_dir=self.root)
+        self.assertEqual(seasonal["valid_bdhei_count"], 240)
+        a = pd.read_csv(self.root / annual["output"])
+        b = pd.read_csv(self.root / seasonal["output"])
+        for name in ("SPEI_3", "STI"):
+            np.testing.assert_array_equal(a[name], b[name])
+        selected = pd.to_datetime(b.date).dt.month.isin([6, 7, 8])
+        self.assertTrue(b.loc[~selected, "BDHEI"].isna().all())
 
     def test_excel_year_month_and_separate_coordinates_match_csv(self):
         expected = calculate_station_from_config(self.config, base_dir=self.root)

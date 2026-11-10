@@ -2,7 +2,11 @@
 
 [English](README.md) | **中文**
 
-BDHEI 是一个研究干旱与高温复合事件的 Python 工具。输入站点表格或网格 NC 文件中的月温度、降水数据，即可计算三个指数：
+BDHEI 是一个研究干旱与高温复合事件的 Python 工具。
+
+本项目同时支持站点气象数据和 NetCDF（NC）网格气象数据，可由月温度、降水计算全年逐月的 SPEI、STI 和 BDHEI。
+
+三个指数分别表示：
 
 - **SPEI**：描述干湿状况。
 - **STI**：描述温度状况。
@@ -50,7 +54,9 @@ bdhei indices --config configs/netcdf_climate.example.yaml
 spei_scale: 3  # 1：SPEI1；3：SPEI3
 ```
 
-STI 默认使用 3 个月尺度。各指数先按完整月序列计算，BDHEI 默认输出 6、7、8 月的结果。
+STI 默认使用 3 个月尺度。SPEI、STI 和 BDHEI 默认计算全年 1—12 月。3 个月尺度的序列起始两个月因累计窗口尚未完整而保留缺测。
+
+如需计算特定季节的 BDHEI，可修改配置中的 `months`，例如 `months: [6, 7, 8]`。SPEI 和 STI 始终使用完整月序列。
 
 ## 数据与结果
 

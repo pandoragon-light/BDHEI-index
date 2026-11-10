@@ -19,7 +19,7 @@ For a scale of N months, the first N−1 months have no accumulated index. Missi
 
 ## BDHEI
 
-STI and SPEI use the full monthly sequence. BDHEI then selects the months in `months`, which defaults to June–August. For valid paired observations, the program fits Gaussian KDE marginal distributions and selects a bivariate copula:
+STI and SPEI use the full monthly sequence. BDHEI uses January–December by default, so it is calculated for every month with valid paired inputs. The `months` setting can select a season, such as `[6, 7, 8]`. Each station or grid cell fits one pair of Gaussian KDE marginal distributions and one selected bivariate copula using all valid observations in the selected months:
 
 ```text
 u = F_SPEI(x)

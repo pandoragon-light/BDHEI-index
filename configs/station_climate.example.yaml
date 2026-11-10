@@ -22,7 +22,8 @@ precipitation_unit: mm/month
 # coordinate_longitude_column: longitude
 
 sti_scale: 3
-months: [6, 7, 8]
+# BDHEI months: all 12 by default; use [6, 7, 8] for a summer-only calculation.
+months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 # SPEI calibration defaults to each station's input years.
 # calibration_year_initial: 1981
 # calibration_year_final: 2010

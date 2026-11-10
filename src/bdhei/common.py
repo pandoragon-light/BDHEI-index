@@ -7,6 +7,9 @@ from typing import Any, Sequence
 import numpy as np
 
 
+DEFAULT_MONTHS: tuple[int, ...] = tuple(range(1, 13))
+
+
 def _resolve_path(value: str | Path, base_dir: str | Path) -> Path:
     path = Path(value)
     return (path if path.is_absolute() else Path(base_dir) / path).resolve()

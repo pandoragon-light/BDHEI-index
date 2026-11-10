@@ -2,7 +2,11 @@
 
 **English** | [中文](README.zh-CN.md)
 
-BDHEI is a Python tool for studying compound drought and heat. It reads monthly temperature and precipitation from station tables or gridded NetCDF files and calculates three indices:
+BDHEI is a Python tool for studying compound drought and heat.
+
+This project supports both station climate data and gridded NetCDF (NC) climate data, using monthly temperature and precipitation to calculate SPEI, STI and BDHEI for every month of the year.
+
+The three indices describe:
 
 - **SPEI** describes dry and wet conditions.
 - **STI** describes temperature conditions.
@@ -50,7 +54,9 @@ Change the first setting in either configuration:
 spei_scale: 3  # 1 = SPEI-1; 3 = SPEI-3
 ```
 
-STI defaults to a three-month scale. All indices use the full monthly sequence; BDHEI is written for June–August by default.
+STI defaults to a three-month scale. SPEI, STI and BDHEI are calculated for all 12 calendar months by default. A three-month index has two missing records at the start of the sequence while its accumulation window fills.
+
+To select a season for BDHEI, change `months` in the configuration, for example `months: [6, 7, 8]`. SPEI and STI continue to use the full monthly sequence.
 
 ## Input and output
 

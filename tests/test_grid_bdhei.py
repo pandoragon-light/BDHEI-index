@@ -46,7 +46,7 @@ class GridBDHEITests(unittest.TestCase):
         index = np.arange(len(time), dtype=float)
         spei = np.sin(index / 5.0) + index / 100.0
         sti = np.cos(index / 7.0) + index / 80.0
-        months = np.isin(time.astype("datetime64[M]").astype(int) % 12 + 1, [6, 7, 8])
+        months = np.ones(len(time), dtype=bool)
         station = calculate_bdhei(
             pd.DataFrame({"SPEI_3": spei[months], "STI": sti[months]})
         )
@@ -65,6 +65,8 @@ class GridBDHEITests(unittest.TestCase):
         )
         self.assertEqual(grid.diagnostics.loc[0, "status"], "ok")
         self.assertEqual(grid.diagnostics.loc[0, "copula_type"], station.copula_type)
+        self.assertTrue(np.isfinite(grid.values).all())
+        self.assertEqual(grid.diagnostics.loc[0, "selected_n"], len(time))
 
     def test_grid_writes_bdhei_only_for_requested_months(self) -> None:
         time = np.arange(
@@ -81,6 +83,7 @@ class GridBDHEITests(unittest.TestCase):
             time,
             [30.0],
             [105.0],
+            months=(6, 7, 8),
         )
         month_numbers = time.astype("datetime64[M]").astype(int) % 12 + 1
         self.assertTrue(np.isnan(result.values[~np.isin(month_numbers, [6, 7, 8])]).all())

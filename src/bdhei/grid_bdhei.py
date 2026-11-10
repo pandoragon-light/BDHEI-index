@@ -8,6 +8,7 @@ from typing import Any, Sequence
 import numpy as np
 import pandas as pd
 
+from .common import DEFAULT_MONTHS
 
 @dataclass(frozen=True)
 class GridBDHEIResult:
@@ -82,14 +83,14 @@ def calculate_bdhei_grid(
     latitudes: Sequence[float],
     longitudes: Sequence[float],
     *,
-    months: Sequence[int] = (6, 7, 8),
+    months: Sequence[int] = DEFAULT_MONTHS,
     eps: float = 1e-6,
     ppf_clip: tuple[float, float] = (0.0001, 0.9999),
 ) -> GridBDHEIResult:
     """Fit and evaluate BDHEI independently for each grid cell.
 
     The output keeps the full input time axis but writes BDHEI values only for
-    the requested calendar months.  The Copula and KDE are fitted separately
+    the requested calendar months (January–December by default). The Copula and KDE are fitted separately
     for each cell using all valid selected-month observations.
     """
 

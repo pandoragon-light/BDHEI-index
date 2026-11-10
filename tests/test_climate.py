@@ -61,7 +61,8 @@ class ClimatePipelineTests(unittest.TestCase):
                 self.assertEqual(result["status"], "OK")
                 self.assertEqual(result["status_counts"], {"ok": 3, "no_valid_data": 1})
                 self.assertEqual(result["valid_spei_count"], (480 - scale + 1) * 3)
-                self.assertEqual(result["valid_bdhei_count"], 120 * 3)
+                self.assertEqual(result["valid_bdhei_count"], 478 * 3)
+                self.assertEqual(result["months"], list(range(1, 13)))
                 with xr.open_dataset(self.root / result["output"], engine="scipy") as output:
                     name = f"SPEI_{scale}"
                     self.assertEqual(output[name].attrs["time_scale_months"], scale)
@@ -74,16 +75,31 @@ class ClimatePipelineTests(unittest.TestCase):
                     if previous_sti is not None:
                         np.testing.assert_array_equal(output.STI.values, previous_sti)
                     previous_sti = output.STI.values.copy()
-                    summer = output.date.dt.month.isin([6, 7, 8]).values
-                    frame = pd.DataFrame({"dry": output[name].values[summer, 0, 0], "heat": output.STI.values[summer, 0, 0]})
+                    valid = np.isfinite(output[name].values[:, 0, 0]) & np.isfinite(output.STI.values[:, 0, 0])
+                    frame = pd.DataFrame({"dry": output[name].values[valid, 0, 0], "heat": output.STI.values[valid, 0, 0]})
                     reference = calculate_bdhei(frame, drought_col="dry", heat_col="heat")
-                    np.testing.assert_allclose(output.BDHEI.values[summer, 0, 0], reference.data.BDHEI, atol=1e-12)
-                    self.assertTrue(np.isnan(output.BDHEI.values[~summer]).all())
+                    np.testing.assert_allclose(output.BDHEI.values[valid, 0, 0], reference.data.BDHEI, atol=1e-12)
+                    self.assertTrue(np.isnan(output.BDHEI.values[:2, 0, 0]).all())
+                    self.assertEqual(set(output.date.dt.month.values[valid]), set(range(1, 13)))
                     self.assertTrue(np.isnan(output[name].values[:, 1, 1]).all())
                 payload = json.loads((self.root / result["summary"]).read_text())
                 self.assertEqual(payload["spei_scale"], scale)
                 self.assertNotIn(str(self.root), json.dumps(payload))
         self.assertEqual(hashlib.sha256(self.source.read_bytes()).hexdigest(), source_hash)
+
+    def test_custom_bdhei_months_preserve_full_year_spei_and_sti(self):
+        annual = calculate_climate_from_config(self.config, base_dir=self.root)
+        seasonal = calculate_climate_from_config({**self.config, "months": [6, 7, 8], "output": "summer.nc"}, base_dir=self.root)
+        self.assertEqual(seasonal["months"], [6, 7, 8])
+        self.assertEqual(seasonal["valid_bdhei_count"], 120 * 3)
+        with xr.open_dataset(self.root / annual["output"], engine="scipy") as a, xr.open_dataset(self.root / seasonal["output"], engine="scipy") as b:
+            for name in ("SPEI_3", "STI"):
+                np.testing.assert_array_equal(a[name].values, b[name].values)
+            selected = b.date.dt.month.isin([6, 7, 8]).values
+            self.assertTrue(np.isnan(b.BDHEI.values[~selected]).all())
+            frame = pd.DataFrame({"dry": b.SPEI_3.values[selected, 0, 0], "heat": b.STI.values[selected, 0, 0]})
+            reference = calculate_bdhei(frame, drought_col="dry", heat_col="heat")
+            np.testing.assert_allclose(b.BDHEI.values[selected, 0, 0], reference.data.BDHEI, atol=1e-12)
 
     def test_kelvin_era5_daily_means_equal_monthly_totals_in_separate_files(self):
         expected = calculate_climate_from_config(self.config, base_dir=self.root)

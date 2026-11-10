@@ -18,7 +18,8 @@ time_dimension: time
 latitude_dimension: latitude
 longitude_dimension: longitude
 sti_scale: 3
-months: [6, 7, 8]
+# BDHEI months: all 12 by default; use [6, 7, 8] for a summer-only calculation.
+months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 # Complete Gregorian monthly years are read from the input, e.g. 1981-2020.
 # SPEI calibration defaults to the input years; optionally set:
 # calibration_year_initial: 1981

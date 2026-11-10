@@ -14,7 +14,7 @@ from .grid_bdhei import calculate_bdhei_grid
 from .grid_sti import calculate_sti_grid
 from .netcdf_io import open_netcdf, write_netcdf
 from .path_safety import privacy_safe_path, sanitize_metadata, validate_io_paths
-from .common import _resolve_path, _validate_months, _monthly_years, temperature_to_celsius, precipitation_to_mm
+from .common import DEFAULT_MONTHS, _resolve_path, _validate_months, _monthly_years, temperature_to_celsius, precipitation_to_mm
 from .spei import calculate_spei_grid, validate_spei_scale
 
 
@@ -39,7 +39,7 @@ def calculate_climate_from_config(config: Mapping[str, Any], *, base_dir: str | 
     sti_scale = config.get("sti_scale", 3)
     if isinstance(sti_scale, bool) or not isinstance(sti_scale, int) or not 1 <= sti_scale <= 12:
         raise ValueError("sti_scale must be an integer from 1 to 12")
-    months = _validate_months(config.get("months", (6, 7, 8)))
+    months = _validate_months(config.get("months", DEFAULT_MONTHS))
     overwrite = config.get("overwrite", False)
     if not isinstance(overwrite, bool):
         raise ValueError("overwrite must be true or false")
