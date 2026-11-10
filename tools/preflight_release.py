@@ -15,6 +15,8 @@ IGNORED_DIRS = {
     "__pycache__",
     "local",
     "output",
+    "build",
+    "dist",
 }
 
 REQUIRED_FILES = {
@@ -37,6 +39,19 @@ REQUIRED_FILES = {
     "src/bdhei/cli.py",
     "src/bdhei/copula_scores.py",
     "src/bdhei/core.py",
+    "src/bdhei/climate.py",
+    "src/bdhei/spei.py",
+    "src/bdhei/sti.py",
+    "src/bdhei/grid_sti.py",
+    "src/bdhei/grid_bdhei.py",
+    "src/bdhei/netcdf_io.py",
+    "src/bdhei/path_safety.py",
+    "src/bdhei/pipeline.py",
+    "configs/netcdf_climate.example.yaml",
+    "configs/era5_climate.example.yaml",
+    "configs/grid_indices.example.yaml",
+    "tests/test_climate.py",
+    "tests/test_cli.py",
     "tests/compare_directory_outputs.py",
     "tests/regression_check.py",
     "tests/tmp/.gitkeep",
@@ -50,7 +65,7 @@ PRIVATE_PATH_PATTERNS = [
     re.compile(r"\b" + "560" + "38" + r"\b"),
 ]
 
-GENERATED_SUFFIXES = {".pyc", ".pyo", ".xlsx", ".xls"}
+GENERATED_SUFFIXES = {".pyc", ".pyo", ".xlsx", ".xls", ".nc", ".nc4"}
 
 
 def to_posix_relative(root: Path, path: Path) -> str:
@@ -61,7 +76,7 @@ def is_release_file(root: Path, path: Path) -> bool:
     rel_parts = path.relative_to(root).parts
     if len(rel_parts) >= 2 and rel_parts[0] == "examples" and rel_parts[1] == "output":
         return rel_parts == ("examples", "output", ".gitkeep")
-    if any(part in IGNORED_DIRS for part in rel_parts):
+    if any(part in IGNORED_DIRS or part.endswith(".egg-info") for part in rel_parts):
         return False
     if path.suffix.lower() in {".pyc", ".pyo"}:
         return False

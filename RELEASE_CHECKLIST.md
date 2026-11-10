@@ -2,6 +2,10 @@
 
 Use this checklist before uploading the project to GitHub.
 
+For the v0.2.0 NetCDF/SPEI-scale update, run `python -m unittest discover -s tests -v`
+and `python tools/preflight_release.py`. The tests use generated climate data
+and the public station sample, including both SPEI scales and original command compatibility.
+
 - [ ] Confirm the paper citation in `CITATION.cff` matches the final Springer metadata.
 - [ ] Keep only example data that can be shared publicly.
 - [ ] Run the example CSV command from `examples/README.md`.

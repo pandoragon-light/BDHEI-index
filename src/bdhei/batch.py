@@ -17,7 +17,7 @@ class BatchConfig:
     sti_dir: Path
     output_dir: Path
     months: tuple[int, ...] = (6, 7, 8)
-    spei_column: str = "SPEI_3"
+    spei_column: str | None = None
     sti_column: str = "STI"
     date_column: str = "date"
     output_column: str = "BDHEI"
@@ -26,6 +26,14 @@ class BatchConfig:
     eps: float = 1e-6
     grid_m: int = 20
     write_scores: bool = True
+    spei_scale: int = 3
+
+    def __post_init__(self) -> None:
+        from .spei import validate_spei_scale
+
+        scale = validate_spei_scale(self.spei_scale)
+        if self.spei_column is None:
+            object.__setattr__(self, "spei_column", f"SPEI_{scale}")
 
 
 def parse_date_series(series: pd.Series) -> pd.Series:

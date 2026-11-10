@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bdhei"
-version = "0.1.0"
+version = "0.2.0"
 description = "Calculate the Blended Drought and High-temperature Evapotranspiration Index (BDHEI)."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11,<3.14"
 authors = [
   { name = "Jian Huang" },
   { name = "Xiehui Li" },
@@ -16,7 +16,7 @@ authors = [
   { name = "Shangru Li" },
   { name = "Fan Zhang" },
 ]
-license = "MIT"
+license = {file = "LICENSE"}
 dependencies = [
   "numpy==2.4.6",
   "pandas==2.3.3",
@@ -24,6 +24,10 @@ dependencies = [
   "copulas==0.14.1",
   "openpyxl==3.1.5",
   "xlrd==2.0.2",
+  "xarray==2026.7.0",
+  "climate-indices==2.4.0",
+  "netCDF4==1.7.4",
+  "PyYAML==6.0.3",
 ]
 
 [project.urls]

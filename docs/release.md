@@ -47,6 +47,12 @@ If `python` is not available on the command line, run the script with your local
 
 ## Verification Commands
 
+Run the automated public tests (including NetCDF climate input and SPEI-1/3):
+
+```powershell
+python -m unittest discover -s tests -v
+```
+
 Run the public example:
 
 ```powershell

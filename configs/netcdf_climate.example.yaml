@@ -1,0 +1,33 @@
+# SPEI selection: change ONLY this parameter to 1 or 3.
+# SPEI-1: 1; SPEI-3: 3 (default). STI remains at sti_scale below.
+spei_scale: 3
+
+# Run from the repository directory:
+# bdhei indices --config configs/netcdf_climate.example.yaml
+# All relative paths are resolved from the current working directory.
+input: local/monthly_temperature_precipitation.nc
+# For separate files, replace input above with:
+# temperature_input: local/monthly_temperature.nc
+# precipitation_input: local/monthly_precipitation.nc
+temperature_variable: tas
+precipitation_variable: pr
+temperature_unit: celsius
+precipitation_unit: mm/month
+
+time_dimension: time
+latitude_dimension: latitude
+longitude_dimension: longitude
+sti_scale: 3
+months: [6, 7, 8]
+# Complete Gregorian monthly years are read from the input, e.g. 1981-2020.
+# SPEI calibration defaults to the input years; optionally set:
+# calibration_year_initial: 1981
+# calibration_year_final: 2010
+
+# {spei_scale} automatically follows the selection at the top.
+output: output/bdhei_spei{spei_scale}.nc
+overwrite: false
+input_engine: auto
+output_engine: netcdf4
+output_format: NETCDF4
+compression_level: 4

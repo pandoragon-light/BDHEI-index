@@ -1,0 +1,23 @@
+# SPEI selection: change ONLY this parameter to 1 or 3.
+spei_scale: 3
+
+# ERA5 monthly averaged reanalysis (monthly means of daily means).
+input: local/era5_monthly.nc
+temperature_variable: t2m
+precipitation_variable: tp
+temperature_unit: kelvin
+# ERA5 monthly averaged tp is metres/day: monthly mm = tp * 1000 * days_in_month.
+# For a file already converted to monthly totals, use m/month or mm/month.
+precipitation_unit: m/day
+time_dimension: time
+# Some CDS files use valid_time, lat and lon: change these names as needed.
+latitude_dimension: latitude
+longitude_dimension: longitude
+sti_scale: 3
+months: [6, 7, 8]
+output: output/era5_bdhei_spei{spei_scale}.nc
+overwrite: false
+input_engine: auto
+output_engine: netcdf4
+output_format: NETCDF4
+compression_level: 4
